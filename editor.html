@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>ACE in Action</title>
+<style type="text/css" media="screen">
+    #editor { 
+        position: absolute;
+        top: 50px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        font-size: 20px;
+    }
+</style>
+</head>
+<body>
+<select id="language" onchange="languageChange()">
+<option value="C" selected="selected">C</option>
+<option value="c_cpp">C++14</option>
+<option value="java">Java</option>
+<option value="html">HTML</option>
+<option value="python">Python</option>
+<option value="javascript">JavaScript</option>
+</select>
+<pre id="editor"></pre>   
+<script src="ace-builds-master/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/c_cpp");
+    editor.setOptions({
+        enableBasicAutocompletion: true,
+        enableSnippets: true,
+        enableLiveAutocompletion: true,
+        autoScrollEditorIntoView: true
+    });
+    editor.commands.addCommand({
+        name: "showKeyboardShortcuts",
+        bindKey: {win: "Ctrl-Alt-h", mac: "Command-Alt-h"},
+        exec: function(editor) {
+            ace.config.loadModule("ace/ext/keybinding_menu", function(module) {
+                module.init(editor);
+                editor.showKeyboardShortcuts()
+            })
+        }
+    })
+    function languageChange(){
+        var s = document.getElementById("language").value;
+        s = "ace/mode/"+s;
+        editor.session.setMode(s);
+        editor.setValue("");
+        console.log("Hye");
+    }
+</script>
+</body>
+</html>
