@@ -1,3 +1,9 @@
+<?php
+session_start();
+$user = $_SESSION["username"];
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,14 +16,67 @@
         font-size: 20px;
     }
 </style>
+
+<script>
+    function logout(){
+        location.href="logout.php";
+    }
+    function validateSaveForm(){
+        var x = document.forms["myform"]["code"].value;
+        console.log(x);
+        if(x==""){
+            alert("empty_editor");
+            return false;
+        }
+        else{
+            document.getElementById("language_s").value=document.getElementById("language").value;
+            alert(document.getElementById("language_s").value);
+            return true;
+        }    
+    }
+
+    function saveshow(){
+        var x = document.getElementById('savesub').style.visibility;
+        var y = document.getElementById('savename').style.visibility;
+        console.log(x,y);
+        if(x=="hidden"){
+            document.getElementById('savesub').style.visibility = "visible";
+            document.getElementById('savename').style.visibility = "visible";
+        }
+        else{
+            document.getElementById('savesub').style.visibility = "hidden";
+            document.getElementById('savename').style.visibility = "hidden";
+        }
+    }
+</script>
+
 </head>
+
+
 <body>
+<div>
+    <span>
+        <a href='profile.php'><?php echo "$user"; ?></a>
+    </span>&nbsp&nbsp&nbsp
+    <span onclick="logout()">LOGOUT</span>&nbsp&nbsp&nbsp
+    <span onclick="saveshow()">SAVE</span>
+    
+    <form action="save.php" name="myform" method="POST" onsubmit="return validateSaveForm()">
+        <input hidden type="text" name="language" id="language_s"></input>
+        <textarea hidden id="code_s" name="code"></textarea>
+        <input type='text' name='code_name' id='savename' style="visibility:hidden"></input>
+        <input type='submit' id="savesub" name='save' style="visibility:hidden"></input>
+    </form>
+
+
+</div>
+
+
 <form id="form">
 	<select id="language" name="language" onchange="languageChange()">
 		<option value="C" selected="selected">C</option>
 		<option value="c_cpp">C++14</option>
 		<option value="java">Java</option>
-		<option value="html">HTML</option>
 		<option value="python">Python</option>
 	</select>
 	<div type="text" id="editor" name="div_code"></div>
@@ -28,7 +87,6 @@
 	</div>
 	<input type="submit" id="but" name="run"></button>
 </form>
-
 
 <script src="ace-builds-master/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -45,8 +103,10 @@
     });
 
     var input = $('#code');
+    var input_s = $('#code_s');
         editor.getSession().on("change", function () {
         input.val(editor.getSession().getValue());
+        input_s.val(editor.getSession().getValue());
     });
 
     editor.commands.addCommand({
@@ -71,10 +131,7 @@
         // alert(input.val());
         event.preventDefault();
         $("#out").html('loading...');
-
         var values = $(this).serialize();
-        console.log(values);
-
         xhr = $.ajax({
             url : "compile.php",
             type : "POST",
